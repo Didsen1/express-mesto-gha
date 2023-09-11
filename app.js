@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const routeUsers = require('./routes/users');
 const routeCards = require('./routes/cards');
 
+const { notFound } = require('./errors/errors');
+
 const URL = 'mongodb://127.0.0.1:27017/mestodb';
 const { PORT = 3000 } = process.env;
 
@@ -28,7 +30,7 @@ app.use('/users', routeUsers);
 app.use('/cards', routeCards);
 
 app.use((req, res, next) => {
-  next(res.status(404).send({ message: 'Страницы по запрошенному URL не существует' }));
+  next(res.status(notFound).send({ message: 'Страницы по запрошенному URL не существует' }));
 });
 
 app.listen(PORT);
