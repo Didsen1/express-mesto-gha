@@ -33,6 +33,6 @@
 
 ## Ссылка на проект
 
-  <a href="https://github.com/Didsen1/express-mesto-gha.git"><img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.flaticon.com%2Fru%2Ffree-icon%2Fgithub-logo_25231&psig=AOvVaw1R7PSKeCBJEV-kXtqV-ndp&ust=1694525263773000&source=images&cd=vfe&opi=89978449&ved=0CBAQjRxqFwoTCOCR0dTUooEDFQAAAAAdAAAAABAE" alt="'Github'"></a>
+https://github.com/Didsen1/express-mesto-gha.git
 
 
