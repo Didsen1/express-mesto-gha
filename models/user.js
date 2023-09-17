@@ -6,7 +6,6 @@ const { URL_REGEX } = require('../utils/other');
 
 const userSchema = new Schema(
   {
-
     email: {
       type: String,
       required: true,
@@ -22,8 +21,8 @@ const userSchema = new Schema(
       required: true,
       select: false,
       validate: {
-        validator: ({ length }) => length >= 8,
-        message: 'Пароль должен состоять минимум из 8 символов',
+        validator: ({ length }) => length >= 6,
+        message: 'Пароль должен состоять минимум из 6 символов',
       },
     },
 
