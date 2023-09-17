@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 const { ObjectId } = mongoose.Schema.Types;
+const { URL_REGEX } = require('../utils/other');
 
 const cardSchema = new Schema({
 
@@ -17,6 +18,10 @@ const cardSchema = new Schema({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: (url) => URL_REGEX.test(url),
+      message: 'Требуется ввести URL',
+    },
   },
 
   owner: {

@@ -1,86 +1,87 @@
 const Card = require('../models/card');
+const NotFoundError = require('../errors/NotFoundError');
+const InaccurateDataError = require('../errors/InaccurateDataError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
-const {
-  badRequest,
-  notFound,
-  internalServerError,
-} = require('../errors/errors');
-
-function deleteCard(req, res) {
-  const { id } = req.params;
+function deleteCard(req, res, next) {
+  const { id: cardId } = req.params;
+  const { userId } = req.user;
 
   Card
-    .findByIdAndRemove(id)
+    .findById({ id: cardId })
     .then((card) => {
-      if (card) return res.send({ data: card });
+      if (!card) throw new NotFoundError('Данные по указанному id не найдены');
 
-      return res.status(notFound).send({ message: 'Карточка с указанным _id не найдена' });
+      const { owner: cardOwnerId } = card;
+      if (cardOwnerId.valueOf() !== userId) throw new ForbiddenError('Нет прав доступа');
+
+      card
+        .remove()
+        .then(() => res.send({ data: card }))
+        .catch(next);
     })
-    .catch((err) => (
-      err.name === 'CastError'
-        ? res.status(badRequest).send({ message: 'Передан некорректный id' })
-        : res.status(internalServerError).send({ message: 'На сервере произошла ошибка' })
-    ));
+    .catch(next);
 }
-
-function getCards(req, res) {
+function getCards(req, res, next) {
   Card
     .find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => res.status(internalServerError).send({ message: 'На сервере произошла ошибка' }));
+    .catch(next);
 }
 
-function createCard(req, res) {
+function createCard(req, res, next) {
   const { name, link } = req.body;
   const { _id: userId } = req.user;
 
   Card
     .create({ name, link, owner: userId })
     .then((card) => res.send({ data: card }))
-    .catch((err) => (
-      err.name === 'ValidationError'
-        ? res.status(badRequest).send({ message: 'Переданы некорректные данные при создании карточки' })
-        : res.status(internalServerError).send({ message: 'На сервере произошла ошибка' })
-    ));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new InaccurateDataError('Переданы некорректные данные при создании карточки'));
+      } else {
+        next(err);
+      }
+    });
 }
 
-function setLikeCard(req, res) {
+function setLikeCard(req, res, next) {
   const { cardId } = req.params;
-  const { _id: userId } = req.user;
+  const { userId } = req.user;
 
   Card
     .findByIdAndUpdate(cardId, { $addToSet: { likes: userId } }, { new: true })
     .then((card) => {
       if (card) return res.send({ data: card });
 
-      return res.status(notFound).send({ message: 'Передан несуществующий _id' });
+      throw new NotFoundError('Карточка с указанным id не найдена');
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        return res.status(badRequest).send({ message: 'Переданы некорректные данные для постановки лайка' });
+        next(new InaccurateDataError('Переданы некорректные данные при добавлении лайка карточке'));
+      } else {
+        next(err);
       }
-
-      return res.status(internalServerError).send({ message: 'На сервере произошла ошибка' });
     });
 }
 
-function unsetLikeCard(req, res) {
+function unsetLikeCard(req, res, next) {
   const { cardId } = req.params;
-  const { _id: userId } = req.user;
+  const { userId } = req.user;
 
   Card
     .findByIdAndUpdate(cardId, { $pull: { likes: userId } }, { new: true })
     .then((card) => {
       if (card) return res.send({ data: card });
 
-      return res.status(notFound).send({ message: 'Передан несуществующий _id' });
+      throw new NotFoundError('Данные по указанному id не найдены');
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        return res.status(badRequest).send({ message: 'Переданы некорректные данные для снятии лайка' });
+        next(new InaccurateDataError('Переданы некорректные данные при снятии лайка карточки'));
+      } else {
+        next(err);
       }
-
-      return res.status(internalServerError).send({ message: 'произошла ошибка' });
     });
 }
 
