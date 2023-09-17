@@ -9,7 +9,7 @@ function deleteCard(req, res, next) {
   const { userId } = req.user;
 
   Card
-    .findById({ id: cardId })
+    .findById({ _id: cardId })
     .then((card) => {
       if (!card) throw new NotFoundError('Данные по указанному id не найдены');
 
@@ -34,7 +34,7 @@ function getCards(req, res, next) {
 
 function createCard(req, res, next) {
   const { name, link } = req.body;
-  const { _id: userId } = req.user;
+  const { userId } = req.user;
 
   Card
     .create({ name, link, owner: userId })
