@@ -1,4 +1,5 @@
 const Card = require('../models/card');
+
 const NotFoundError = require('../errors/NotFoundError');
 const InaccurateDataError = require('../errors/InaccurateDataError');
 const ForbiddenError = require('../errors/ForbiddenError');
@@ -22,9 +23,11 @@ function deleteCard(req, res, next) {
     })
     .catch(next);
 }
+
 function getCards(req, res, next) {
   Card
     .find({})
+    .populate(['owner', 'likes'])
     .then((cards) => res.send({ data: cards }))
     .catch(next);
 }
@@ -35,7 +38,7 @@ function createCard(req, res, next) {
 
   Card
     .create({ name, link, owner: userId })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new InaccurateDataError('Переданы некорректные данные при создании карточки'));

@@ -26,8 +26,8 @@ app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/', login);
+app.post('/', createUser);
 
 app.use(auth);
 
