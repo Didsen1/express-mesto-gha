@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+
 const { URL_REGEX } = require('../utils/other');
 const {
   getUsers,

@@ -6,8 +6,8 @@ const { errors } = require('celebrate');
 
 const routeUsers = require('./routes/users');
 const routeCards = require('./routes/cards');
-const login = require('./routes/signin');
-const createUser = require('./routes/signup');
+const routeSignin = require('./routes/signin');
+const routeSignup = require('./routes/signup');
 const auth = require('./middlewares/auth');
 
 const NotFoundError = require('./errors/NotFoundError');
@@ -26,8 +26,8 @@ app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post('/', login);
-app.post('/', createUser);
+app.post('/', routeSignup);
+app.post('/', routeSignin);
 
 app.use(auth);
 
