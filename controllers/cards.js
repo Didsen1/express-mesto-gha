@@ -9,7 +9,9 @@ function deleteCard(req, res, next) {
   const { userId } = req.user;
 
   Card
-    .findById({ _id: cardId })
+    .findById({
+      _id: cardId,
+    })
     .then((card) => {
       if (!card) throw new NotFoundError('Данные по указанному id не найдены');
 
