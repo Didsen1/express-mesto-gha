@@ -79,10 +79,10 @@ function unsetLikeCard(req, res, next) {
 }
 
 function deleteCard(req, res, next) {
-  const { cardId } = req.params;
+  const { id: cardId } = req.params;
   const ownerId = req.user._id;
 
-  Card.findById(cardId)
+  Card.findById({ _id: cardId })
     .orFail(() => {
       throw new NotFoundError('Данные по указанному id не найдены');
     })
