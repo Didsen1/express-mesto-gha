@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const { Schema } = mongoose;
-
 const { URL_REGEX } = require('../utils/other');
 
 const userSchema = new Schema(
