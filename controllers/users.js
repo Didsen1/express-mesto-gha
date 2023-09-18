@@ -10,6 +10,54 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const { SECRET_SIGNING_KEY } = require('../utils/other');
 
+function createUser(req, res, next) {
+  const {
+    name, about, avatar, password, email,
+  } = req.body;
+
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, password: hash, email,
+    }))
+    .then((user) => {
+      const { _id } = user;
+
+      return res.status(201).send({
+        name, about, avatar, email, _id,
+      });
+    })
+    .catch((err) => {
+      if (err.code === 11000) {
+        next(new ConflictError('Пользователь с таким электронным адресом уже зарегистрирован'));
+      } else if (err.name === 'ValidationError') {
+        next(new InaccurateDataError('Переданы некорректные данные при регистрации пользователя'));
+      } else {
+        next(err);
+      }
+    });
+}
+
+function login(req, res, next) {
+  const { email, password } = req.body;
+
+  User
+    .findUserByCredentials(email, password)
+    .then(({ _id: userId }) => {
+      if (userId) {
+        const token = jwt.sign(
+          { userId },
+          SECRET_SIGNING_KEY,
+          { expiresIn: '7d' },
+        );
+
+        return res.send({ _id: token });
+      }
+
+      throw new UnauthorizedError('Неправильные почта или пароль');
+    })
+    .catch(next);
+}
+
 function getUsers(req, res, next) {
   User
     .find({})
@@ -55,33 +103,6 @@ function getCurrentUser(req, res, next) {
     });
 }
 
-function createUser(req, res, next) {
-  const {
-    name, about, avatar, password, email,
-  } = req.body;
-
-  bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name, about, avatar, password: hash, email,
-    }))
-    .then((user) => {
-      const { _id } = user;
-
-      return res.status(201).send({
-        name, about, avatar, email, _id,
-      });
-    })
-    .catch((err) => {
-      if (err.code === 11000) {
-        next(new ConflictError('Пользователь с таким электронным адресом уже зарегистрирован'));
-      } else if (err.name === 'ValidationError') {
-        next(new InaccurateDataError('Переданы некорректные данные при регистрации пользователя'));
-      } else {
-        next(err);
-      }
-    });
-}
-
 function setUser(req, res, next) {
   const { name, about } = req.body;
   const { userId } = req.user;
@@ -120,27 +141,6 @@ function setUserAvatar(req, res, next) {
         next(err);
       }
     });
-}
-
-function login(req, res, next) {
-  const { email, password } = req.body;
-
-  User
-    .findUserByCredentials(email, password)
-    .then(({ _id: userId }) => {
-      if (userId) {
-        const token = jwt.sign(
-          { userId },
-          SECRET_SIGNING_KEY,
-          { expiresIn: '7d' },
-        );
-
-        return res.send({ _id: token });
-      }
-
-      throw new UnauthorizedError('Неправильные почта или пароль');
-    })
-    .catch(next);
 }
 
 module.exports = {

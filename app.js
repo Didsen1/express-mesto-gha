@@ -1,11 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const helmet = require('helmet');
+const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 
-const routeSignin = require('./routes/signin');
 const routeSignup = require('./routes/signup');
+const routeSignin = require('./routes/signin');
 
 const auth = require('./middlewares/auth');
 

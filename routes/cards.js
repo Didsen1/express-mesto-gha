@@ -3,11 +3,11 @@ const { celebrate, Joi } = require('celebrate');
 
 const { URL_REGEX } = require('../utils/other');
 const {
-  getCards,
-  deleteCard,
   createCard,
+  getCards,
   setLikeCard,
   unsetLikeCard,
+  deleteCard,
 } = require('../controllers/cards');
 
 router.post('/', celebrate({

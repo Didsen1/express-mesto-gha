@@ -5,9 +5,9 @@ const { URL_REGEX } = require('../utils/other');
 const {
   getUsers,
   getUser,
+  getCurrentUser,
   setUser,
   setUserAvatar,
-  getCurrentUser,
 } = require('../controllers/users');
 
 router.get('/', getUsers);
