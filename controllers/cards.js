@@ -79,7 +79,7 @@ function unsetLikeCard(req, res, next) {
 }
 
 function deleteCard(req, res, next) {
-  const { id: cardId } = req.params;
+  const { _id: cardId } = req.params;
   const { userId } = req.user;
 
   Card
