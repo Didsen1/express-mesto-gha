@@ -4,9 +4,11 @@ const { celebrate, Joi } = require('celebrate');
 const { URL_REGEX } = require('../utils/other');
 const {
   createCard,
+
   getCards,
   setLikeCard,
   unsetLikeCard,
+
   deleteCard,
 } = require('../controllers/cards');
 

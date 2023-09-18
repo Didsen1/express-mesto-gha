@@ -1,29 +1,40 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const User = require('../models/user');
-
-const NotFoundError = require('../errors/NotFoundError');
-const InaccurateDataError = require('../errors/InaccurateDataError');
-const ConflictError = require('../errors/ConflictError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
-
 const { SECRET_SIGNING_KEY } = require('../utils/other');
+const UnauthorizedError = require('../errors/UnauthorizedError');
+const NotFoundError = require('../errors/NotFoundError');
+const ConflictError = require('../errors/ConflictError');
+
+const User = require('../models/user');
+const InaccurateDataError = require('../errors/InaccurateDataError');
 
 function createUser(req, res, next) {
   const {
-    name, about, avatar, password, email,
+    email,
+    password,
+    name,
+    about,
+    avatar,
   } = req.body;
 
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
-      name, about, avatar, password: hash, email,
+      email,
+      password: hash,
+      name,
+      about,
+      avatar,
     }))
     .then((user) => {
       const { _id } = user;
 
       return res.status(201).send({
-        name, about, avatar, email, _id,
+        email,
+        name,
+        about,
+        avatar,
+        _id,
       });
     })
     .catch((err) => {
@@ -58,7 +69,7 @@ function login(req, res, next) {
     .catch(next);
 }
 
-function getUsers(req, res, next) {
+function getUsers(_, res, next) {
   User
     .find({})
     .then((users) => res.send({ users }))
@@ -108,7 +119,17 @@ function setUser(req, res, next) {
   const { userId } = req.user;
 
   User
-    .findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
+    .findByIdAndUpdate(
+      userId,
+      {
+        name,
+        about,
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    )
     .then((user) => {
       if (user) return res.send({ user });
 
@@ -128,7 +149,16 @@ function setUserAvatar(req, res, next) {
   const { userId } = req.user;
 
   User
-    .findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
+    .findByIdAndUpdate(
+      userId,
+      {
+        avatar,
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    )
     .then((user) => {
       if (user) return res.send({ user });
 

@@ -1,8 +1,8 @@
 const Card = require('../models/card');
 
-const NotFoundError = require('../errors/NotFoundError');
 const InaccurateDataError = require('../errors/InaccurateDataError');
 const ForbiddenError = require('../errors/ForbiddenError');
+const NotFoundError = require('../errors/NotFoundError');
 
 function createCard(req, res, next) {
   const { name, link } = req.body;
@@ -20,7 +20,7 @@ function createCard(req, res, next) {
     });
 }
 
-function getCards(req, res, next) {
+function getCards(_, res, next) {
   Card
     .find({})
     .populate(['owner', 'likes'])
@@ -63,7 +63,17 @@ function unsetLikeCard(req, res, next) {
   const { userId } = req.user;
 
   Card
-    .findByIdAndUpdate(cardId, { $pull: { likes: userId } }, { new: true })
+    .findByIdAndUpdate(
+      cardId,
+      {
+        $pull: {
+          likes: userId,
+        },
+      },
+      {
+        new: true,
+      },
+    )
     .then((card) => {
       if (card) return res.send({ data: card });
 
