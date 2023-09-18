@@ -4,34 +4,6 @@ const NotFoundError = require('../errors/NotFoundError');
 const InaccurateDataError = require('../errors/InaccurateDataError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
-function deleteCard(req, res, next) {
-  const { cardId } = req.params;
-  const { userId } = req.user;
-
-  Card
-    .findById({ cardId })
-    .then((card) => {
-      if (!card) throw new NotFoundError('Данные по указанному id не найдены');
-
-      const { owner: cardOwnerId } = card;
-      if (cardOwnerId.valueOf() !== userId) throw new ForbiddenError('Нет прав доступа');
-
-      card
-        .remove()
-        .then(() => res.send({ data: card }))
-        .catch(next);
-    })
-    .catch(next);
-}
-
-function getCards(req, res, next) {
-  Card
-    .find({})
-    .populate(['owner', 'likes'])
-    .then((cards) => res.send({ data: cards }))
-    .catch(next);
-}
-
 function createCard(req, res, next) {
   const { name, link } = req.body;
   const { userId } = req.user;
@@ -48,12 +20,30 @@ function createCard(req, res, next) {
     });
 }
 
+function getCards(req, res, next) {
+  Card
+    .find({})
+    .populate(['owner', 'likes'])
+    .then((cards) => res.send({ data: cards }))
+    .catch(next);
+}
+
 function setLikeCard(req, res, next) {
   const { cardId } = req.params;
   const { userId } = req.user;
 
   Card
-    .findByIdAndUpdate(cardId, { $addToSet: { likes: userId } }, { new: true })
+    .findByIdAndUpdate(
+      cardId,
+      {
+        $addToSet: {
+          likes: userId,
+        },
+      },
+      {
+        new: true,
+      },
+    )
     .then((card) => {
       if (card) return res.send({ data: card });
 
@@ -88,10 +78,32 @@ function unsetLikeCard(req, res, next) {
     });
 }
 
+function deleteCard(req, res, next) {
+  const { id: cardId } = req.params;
+  const { userId } = req.user;
+
+  Card
+    .findById({
+      _id: cardId,
+    })
+    .then((card) => {
+      if (!card) throw new NotFoundError('Данные по указанному id не найдены');
+
+      const { owner: cardOwnerId } = card;
+      if (cardOwnerId.valueOf() !== userId) throw new ForbiddenError('Нет прав доступа');
+
+      card
+        .remove()
+        .then(() => res.send({ data: card }))
+        .catch(next);
+    })
+    .catch(next);
+}
+
 module.exports = {
-  getCards,
-  deleteCard,
   createCard,
+  getCards,
   setLikeCard,
   unsetLikeCard,
+  deleteCard,
 };
