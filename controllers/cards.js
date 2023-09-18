@@ -82,17 +82,19 @@ function deleteCard(req, res, next) {
   const { cardId } = req.params;
   const { userId } = req.user;
 
-  Card.findOne({
-    _id: cardId,
+  Card.findById({
+    cardId,
   })
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Данные по указанному id не найдены');
       }
-      if (card.owner._id.toString() !== userId) {
+      const { owner: cardOwnerId } = card;
+      if (cardOwnerId.valueOf() !== userId) {
         throw new ForbiddenError('Нет прав доступа');
       }
-      return Card.deleteOne({ _id: cardId }).then(() => res.send({ message: 'карточка успешно удалена' }));
+      Card.deleteOne(card).then(() => res.status(200).send({ data: card }))
+        .catch(next);
     })
     .catch(next);
 }
