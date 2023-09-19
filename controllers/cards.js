@@ -78,7 +78,7 @@ function unsetLikeCard(req, res, next) {
     });
 }
 
-module.exports.deleteCard = (req, res, next) => {
+function deleteCard(req, res, next) {
   Card.findOne({
     _id: req.params.cardId,
   })
@@ -96,11 +96,12 @@ module.exports.deleteCard = (req, res, next) => {
         next(new InaccurateDataError('Введен некорректный тип данных (_id)'));
       } else next(err);
     });
-};
+}
 
 module.exports = {
   createCard,
   getCards,
   setLikeCard,
   unsetLikeCard,
+  deleteCard,
 };
