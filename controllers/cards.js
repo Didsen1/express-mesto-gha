@@ -79,12 +79,11 @@ function unsetLikeCard(req, res, next) {
 }
 
 function deleteCard(req, res, next) {
-  const { _id: cardId } = req.params;
   const { userId } = req.user;
 
   Card
-    .findByfindOne({
-      _id: cardId,
+    .findById({
+      _id: req.params.cardId,
     })
     .then((card) => {
       if (!card) throw new NotFoundError('Данные по указанному id не найдены');
@@ -92,10 +91,10 @@ function deleteCard(req, res, next) {
       const { owner: cardOwnerId } = card;
       if (cardOwnerId.valueOf() !== userId) throw new ForbiddenError('Нет прав доступа');
 
-      Card.deleteOne({
-        _id: cardId,
-      })
-        .then(() => res.status(200).send({ data: card }));
+      card
+        .remove()
+        .then(() => res.send({ data: card }))
+        .catch(next);
     })
     .catch(next);
 }
