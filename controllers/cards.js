@@ -79,23 +79,25 @@ function unsetLikeCard(req, res, next) {
 }
 
 function deleteCard(req, res, next) {
-  Card.findOne({
-    _id: req.params.cardId,
-  })
-    .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Данные по указанному id не найдены');
-      }
-      if (card.owner._id.toString() !== req.user._id) {
-        throw new ForbiddenError('Нет прав доступа');
-      }
-      return Card.deleteOne({ _id: req.params.cardId }).then(() => res.send({ message: 'карточка успешно удалена' }));
+  const { _id: cardId } = req.params;
+  const { userId } = req.user;
+
+  Card
+    .findByfindOne({
+      _id: cardId,
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new InaccurateDataError('Введен некорректный тип данных (_id)'));
-      } else next(err);
-    });
+    .then((card) => {
+      if (!card) throw new NotFoundError('Данные по указанному id не найдены');
+
+      const { owner: cardOwnerId } = card;
+      if (cardOwnerId.valueOf() !== userId) throw new ForbiddenError('Нет прав доступа');
+
+      Card.deleteOne({
+        _id: cardId,
+      })
+        .then(() => res.status(200).send({ data: card }));
+    })
+    .catch(next);
 }
 
 module.exports = {
