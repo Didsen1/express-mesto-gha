@@ -78,31 +78,29 @@ function unsetLikeCard(req, res, next) {
     });
 }
 
-function deleteCard(req, res, next) {
-  const { _id: cardId } = req.params;
-  const { userId } = req.user;
-
-  Card
-    .findById({
-      _id: cardId,
-    })
+module.exports.deleteCard = (req, res, next) => {
+  Card.findOne({
+    _id: req.params.cardId,
+  })
     .then((card) => {
-      if (!card) throw new NotFoundError('Данные по указанному id не найдены');
-
-      const { owner: cardOwnerId } = card;
-      if (cardOwnerId.valueOf() !== userId) throw new ForbiddenError('Нет прав доступа');
-
-      card
-        .remove()
-        .then(() => res.status(200).send({ data: card }));
+      if (!card) {
+        throw new NotFoundError('Данные по указанному id не найдены');
+      }
+      if (card.owner._id.toString() !== req.user._id) {
+        if (cardOwnerId.valueOf() !== userId) throw new ForbiddenError('Нет прав доступа');
+      }
+      return Card.deleteOne({ _id: req.params.cardId }).then(() => res.send({ message: 'карточка успешно удалена' }));
     })
-    .catch(next);
-}
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new InaccurateDataError('Введен некорректный тип данных (_id)'));
+      } else next(err);
+    });
+};
 
 module.exports = {
   createCard,
   getCards,
   setLikeCard,
   unsetLikeCard,
-  deleteCard,
 };
