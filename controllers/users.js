@@ -6,7 +6,6 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const InaccurateDataError = require('../errors/InaccurateDataError');
 const ConflictError = require('../errors/ConflictError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const { SECRET_SIGNING_KEY } = require('../utils/other');
 
@@ -43,17 +42,13 @@ function login(req, res, next) {
   User
     .findUserByCredentials(email, password)
     .then(({ _id: userId }) => {
-      if (userId) {
-        const token = jwt.sign(
-          { userId },
-          SECRET_SIGNING_KEY,
-          { expiresIn: '7d' },
-        );
+      const token = jwt.sign(
+        { userId },
+        SECRET_SIGNING_KEY,
+        { expiresIn: '7d' },
+      );
 
-        return res.send({ _id: token });
-      }
-
-      throw new UnauthorizedError('Неправильные почта или пароль');
+      return res.send({ _id: token });
     })
     .catch(next);
 }
@@ -95,11 +90,7 @@ function getCurrentUser(req, res, next) {
       throw new NotFoundError('Пользователь с таким id не найден');
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new InaccurateDataError('Передан некорректный id'));
-      } else {
-        next(err);
-      }
+      next(err);
     });
 }
 
@@ -115,11 +106,7 @@ function setUser(req, res, next) {
       throw new NotFoundError('Пользователь с таким id не найден');
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new InaccurateDataError('Переданы некорректные данные при обновлении профиля пользователя'));
-      } else {
-        next(err);
-      }
+      next(err);
     });
 }
 

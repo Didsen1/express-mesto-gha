@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 
 const { Schema } = mongoose;
 const { URL_REGEX } = require('../utils/other');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const userSchema = new Schema(
   {
@@ -20,28 +21,16 @@ const userSchema = new Schema(
       type: String,
       required: true,
       select: false,
-      validate: {
-        validator: ({ length }) => length >= 6,
-        message: 'Пароль должен состоять минимум из 6 символов',
-      },
     },
 
     name: {
       type: String,
       default: 'Жак-Ив Кусто',
-      validate: {
-        validator: ({ length }) => length >= 2 && length <= 30,
-        message: 'Имя пользователя должно быть длиной от 2 до 30 символов',
-      },
     },
 
     about: {
       type: String,
       default: 'Исследователь',
-      validate: {
-        validator: ({ length }) => length >= 2 && length <= 30,
-        message: 'Информация о пользователе должна быть длиной от 2 до 30 символов',
-      },
     },
 
     avatar: {
@@ -55,23 +44,18 @@ const userSchema = new Schema(
   },
 
   {
-    versionKey: false,
     statics: {
       findUserByCredentials(email, password) {
-        return this
-          .findOne({ email })
+        return this.findOne({ email })
           .select('+password')
           .then((user) => {
-            if (user) {
-              return bcrypt.compare(password, user.password)
-                .then((matched) => {
-                  if (matched) return user;
+            if (!user) throw new UnauthorizedError('Неверные почта или пароль');
+            return bcrypt.compare(password, user.password)
+              .then((matched) => {
+                if (!matched) throw new UnauthorizedError('Неверные почта или пароль');
 
-                  return Promise.reject();
-                });
-            }
-
-            return Promise.reject();
+                return user;
+              });
           });
       },
     },
