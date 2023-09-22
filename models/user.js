@@ -21,16 +21,21 @@ const userSchema = new Schema(
       type: String,
       required: true,
       select: false,
+      minlength: 6,
     },
 
     name: {
       type: String,
       default: 'Жак-Ив Кусто',
+      minlength: 2,
+      maxlength: 30,
     },
 
     about: {
       type: String,
       default: 'Исследователь',
+      minlength: 2,
+      maxlength: 30,
     },
 
     avatar: {
