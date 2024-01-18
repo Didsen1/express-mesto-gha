@@ -1,7 +1,28 @@
 [![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)
-# Проект Mesto фронтенд + бэкенд
+# Проект: Mesto фронтенд + бэкенд
 
-## Директории
+## Обзор проекта
+
+### Описание проекта
+
+Данная проектная работа выполнена в рамках образовательной программы <a href="https://practicum.yandex.ru/">Яндекс Практикума</a>. Проект представляет собой написание серверной логики для последующего объединения с частью frontendа, сделанной на "React"
+
+### Функционал
+- Регистрация и авторизация пользователей
+- Редактирование данных пользователя
+- Получение данных о всех пользователях, об одном и о текущем авторизованном
+- Добавление новой карточки
+- Добавление и снятие лайка (включая счетчик лайков)
+- Удаление карточки с модальным окном подтверждения действия
+
+### Стек технологий
+<span>
+  <a href=""><img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Иконка 'Express'"></a>
+  <a href=""><img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Иконка 'Node JS'"></a>
+  <a href=""><img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="Иконка 'MongoDB'"></a>
+</span>
+
+### Директории
 
 `/routes` — папка с файлами роутера  
 `/controllers` — папка с файлами контроллеров пользователя и карточки   
@@ -9,29 +30,12 @@
   
 Остальные директории вспомогательные, создаются при необходимости разработчиком
 
-## Запуск проекта
+### Запуск проекта
 
 `npm run start` — запускает сервер   
 `npm run dev` — запускает сервер с hot-reload
 
-## Описание проекта
-
-Учебный проект с образовательных курсов платформы "Яндекс Практикум".
-
-Основная цель проекта - закрепить навыки backend разработки, полученные в ходе обучения.
-
-## Стек технологий
-
-При создании проекта были использованные данные технологии:
-
-<span>
-  <a href=""><img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="'Express'"></a>
-  <a href=""><img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="'Node JS'"></a>
-  <a href=""><img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="'MongoDB'"></a>
-  <a href=""><img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white" alt="'Postman'"></a>
-</span>
-
-## Ссылка на проект
+### Ссылка на проект
 
 https://github.com/Didsen1/express-mesto-gha.git
 
